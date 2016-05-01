@@ -6,23 +6,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
 
         tools:context="com.warlock31.badcontroller.MainActivity">
 
         <include
             android:id="@+id/app_bar"
             layout="@layout/app_bar" />
-
+        <com.warlock31.badcontroller.tabs.SlidingTabLayout
+            android:layout_width="match_parent"
+            android:id="@+id/tabs"
+            android:layout_height="wrap_content" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/app_bar"
             android:text="Hello World!" />
-    </RelativeLayout>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
     <fragment
         android:id="@+id/fragment_navigation_drawer"

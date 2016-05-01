@@ -12,6 +12,7 @@
         <!-- TODO: Update blank fragment layout -->
         <ImageView
             android:layout_width="280dp"
+
             android:layout_height="160dp"
             android:layout_marginTop="@dimen/margin_top"
             android:layout_marginBottom="16dp"
@@ -19,6 +20,8 @@
 
     </LinearLayout>
 <android.support.v7.widget.RecyclerView
+    android:id="@+id/drawer_list"
+    android:layout_below="@+id/container_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 

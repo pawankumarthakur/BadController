@@ -1,6 +1,7 @@
 package com.warlock31.badcontroller;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,13 +20,24 @@ public class WarlockAdapter extends RecyclerView.Adapter<WarlockAdapter.MyViewHo
 
 
     private LayoutInflater inflater;
+    Context context;
+
+//    private ClickListener clickListener;
     List<Information> data = Collections.emptyList();
 
-    public WarlockAdapter(Context context){
+    public WarlockAdapter(Context context, List<Information> data){
+        this.context = context;
         inflater = LayoutInflater.from(context);
 
         this.data = data;
     }
+
+
+    public void delete(int position){
+        data.remove(position);
+        notifyItemRemoved(position);
+    }
+
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -46,12 +58,17 @@ public class WarlockAdapter extends RecyclerView.Adapter<WarlockAdapter.MyViewHo
 
     }
 
+
+//    public void setClickListener(ClickListener clickListener){
+//        this.clickListener = clickListener;
+//    }
+
     @Override
     public int getItemCount() {
-        return 0;
+        return data.size();
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder{
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView title;
         ImageView item;
@@ -59,8 +76,16 @@ public class WarlockAdapter extends RecyclerView.Adapter<WarlockAdapter.MyViewHo
         public MyViewHolder(View itemView) {
 
             super(itemView);
+
+
             title = (TextView) itemView.findViewById(R.id.listText);
             item = (ImageView) itemView.findViewById(R.id.listIcon);
+
         }
+
+
     }
+
+
+
 }

@@ -1,4 +1,4 @@
-package com.warlock31.badcontroller.tabs;
+package com.warlock31.badcontroller.views;
 
 /**
  * Created by Warlock on 5/1/2016.

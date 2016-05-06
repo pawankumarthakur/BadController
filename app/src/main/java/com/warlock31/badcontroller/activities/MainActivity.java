@@ -1,8 +1,14 @@
-package com.warlock31.badcontroller;
+package com.warlock31.badcontroller.activities;
 
+import android.annotation.TargetApi;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
+import android.os.Build;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -11,18 +17,21 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.warlock31.badcontroller.tabs.SlidingTabLayout;
+import com.warlock31.badcontroller.fragments.FragmentHome;
+import com.warlock31.badcontroller.fragments.FragmentPs;
+import com.warlock31.badcontroller.fragments.FragmentXbox;
+import com.warlock31.badcontroller.fragments.MyFragment;
+import com.warlock31.badcontroller.fragments.NavigationDrawerFragment;
+import com.warlock31.badcontroller.R;
+import com.warlock31.badcontroller.services.MyService;
+import com.warlock31.badcontroller.views.SlidingTabLayout;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,11 +39,27 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mPager;
     private SlidingTabLayout mTabs;
 
+    public static final int BADCONTROLLER_HOME=0;
+    public static final int BADCONTROLLER_XBOX=1;
+    public static final int BADCONTROLLER_PS=2;
+
+    private static int jobId = 100;
+
+
+    private JobScheduler mJobScheduler;
+
+    ComponentName mServiceComponent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = (Toolbar) findViewById(R.id.app_bar);
+
+        mServiceComponent = new ComponentName(this,MyService.class);
+        mJobScheduler = (JobScheduler) getSystemService( Context.JOB_SCHEDULER_SERVICE );
+        constructJob();
+
+                toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -56,6 +81,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    private void constructJob(){
+        JobInfo.Builder builder = new JobInfo.Builder(jobId,mServiceComponent);
+
+//        PersistableBundle persistableBundle = new PersistableBundle();
+
+        builder.setPeriodic(2000)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .setPersisted(true);
+
+        mJobScheduler.schedule(builder.build());
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -72,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.categories) {
-            startActivity(new Intent(this, Categories.class));
+            startActivity(new Intent(this, HomeActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -92,8 +130,22 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            MyFragment myFragment = MyFragment.getInstance(position);
-            return myFragment;
+           Fragment fragment=null;
+            switch (position){
+                case BADCONTROLLER_HOME:
+                    fragment = new FragmentHome().newInstance("","");
+                    break;
+                case BADCONTROLLER_XBOX:
+                    fragment = new FragmentXbox().newInstance("","");
+                    break;
+                case BADCONTROLLER_PS:
+                    fragment = new FragmentPs().newInstance("","");
+                    break;
+                default:
+                    break;
+
+            }
+            return fragment;
         }
 
         @Override
@@ -115,29 +167,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static class MyFragment extends Fragment {
 
-        private TextView textView;
-
-        public static MyFragment getInstance(int position) {
-            MyFragment myFragment = new MyFragment();
-            Bundle args = new Bundle();
-            args.putInt("position", position);
-            myFragment.setArguments(args);
-            return myFragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstance) {
-            View layout = inflater.inflate(R.layout.fragment_my, container, false);
-            textView = (TextView) layout.findViewById(R.id.position);
-            Bundle bundle = getArguments();
-            if (bundle != null) {
-                textView.setText("The Page currently selected is " + bundle.getInt("position"));
-            }
-            return layout;
-        }
-    }
 
 
 }

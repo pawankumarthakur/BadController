@@ -14,9 +14,6 @@ public class WordPressPost implements Parcelable {
     private String publishedDate;
     private String content;
     private String shortDescription;
-
-
-
     private String featuredMedia;
     private String excerpt;
 

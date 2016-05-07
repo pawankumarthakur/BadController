@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        PersistableBundle persistableBundle = new PersistableBundle();
 
-        builder.setPeriodic(2000)
+        builder.setPeriodic(60000)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                 .setPersisted(true);
 

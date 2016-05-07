@@ -22,6 +22,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.warlock31.badcontroller.MyApplication;
 import com.warlock31.badcontroller.R;
 import com.warlock31.badcontroller.adapters.AdapterXBox;
 import com.warlock31.badcontroller.network.Constants;
@@ -51,7 +52,7 @@ public class FragmentXbox extends Fragment {
     private static final String STATE_POSTS ="state_posts";
     private TextView text;
 
-    public static final String URL_XBOX = "http://www.badcontroller.com/api/get_category_posts?slug=xbox&include=id,title,excerpt,date,thumbnail";
+
 
 
     // TODO: Rename and change types of parameters
@@ -105,117 +106,12 @@ public class FragmentXbox extends Fragment {
 
 
 
-        volleySingleton = VolleySingleton.getInstance();
-        requestQueue = volleySingleton.getRequestQueue();
-        sendJsonRequest();
+
+//        sendJsonRequest();
 
     }
 
-    private void sendJsonRequest(){
-//        Log.i("Warlock","Entered sendJsonRequest");
-        URL url;
-        String newUrl = null;
-        try {
-            url = new URL(URL_XBOX);
-            newUrl = url.toString();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,newUrl,new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-//                Log.i("Warlock","Entered onResponse");
 
-                try {
-//                    Log.i("Warlock",response.toString());
-                    listPosts = parseJsonObject(response);
-                    adapterXBox.setListPost(listPosts);
-                } catch (JSONException e) {
-
-                    e.printStackTrace();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-//                Log.i("Warlock",error.toString());
-            }
-        });
-        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-
-            }
-        });
-
-        requestQueue.add(jsonObjectRequest);
-    }
-
-
-    private ArrayList<WordPressPost> parseJsonObject(JSONObject response) throws JSONException {
-        //Log.i("Warlock","Entered parseJsonArray");
-
-        ArrayList<WordPressPost> wordPressPostArrayList = new ArrayList<>();
-
-        if (response == null || response.length() == 0){
-            return null;
-        }
-
-            String id = "0";
-            String title= "NA";
-            String excerpt= "NA";
-
-        JSONArray jsonArray = response.getJSONArray("posts");
-
-        for(int i=0; i < jsonArray.length(); i++){
-
-
-
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-             id = jsonObject.getString(KEY_ID);
-//            String title = jsonObject.getString(KEY_TITLE);
-
-            JSONObject jsonImage = jsonObject.getJSONObject("thumbnail_images");
-            JSONObject jsonImage1 = jsonImage.getJSONObject("medium_large");
-
-
-
-             title = jsonObject.getString(KEY_TITLE);
-//            String content = jsonObject.getString(KEY_CONTENT);
-             excerpt = jsonObject.getString(KEY_EXCERPT);
-            //Log.i("Warlock",title+excerpt);
-            //String featuredMediaID = jsonImage.getString(KEY_FEATURED_MEDIA);
-            WordPressPost newPost = new WordPressPost();
-            newPost.setFeaturedMedia(jsonImage1.getString("url"));
-            newPost.setId(id);
-            newPost.setTitle(title);
-//            newPost.setContent(content);
-            newPost.setExcerpt(excerpt);
-
-//
-
-            listPosts.add(newPost);
-
-            wordPressPostArrayList.add(newPost);
-
-        }
-        //Log.i("Warlock",listPosts.toString());
-
-
-        return wordPressPostArrayList;
-
-    }
 
 
 
@@ -232,10 +128,11 @@ public class FragmentXbox extends Fragment {
 
         if (savedInstanceState != null){
             listPosts = savedInstanceState.getParcelableArrayList(STATE_POSTS);
-            adapterXBox.setListPost(listPosts);
+
         }else {
-            sendJsonRequest();
+           listPosts = MyApplication.getWritableDatabase().readPosts();
         }
+        adapterXBox.setListPost(listPosts);
 
         return view;
     }
